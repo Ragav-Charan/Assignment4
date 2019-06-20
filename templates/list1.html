@@ -8,6 +8,8 @@
       google.charts.setOnLoadCallback(drawBarChart);
        google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawPieChart);
+       google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawHistogram);
       function drawScatterChart() {
           var dataset = {{ p|tojson }}
         {#var data = google.visualization.arrayToDataTable([#}
@@ -37,15 +39,20 @@
         var data = google.visualization.arrayToDataTable(dataset);
         var options = {
         title: 'Mag vs. Query Count comparison',
-        colors: ['#9575cd'],
+            legend:'none',
         hAxis: {
           title: 'Mag',
         },
         vAxis: {
           title: 'Query Count'
-        }
+        },
+             axes: {
+            x: {
+              0: { side: 'top', label: 'White to move'} // Top x-axis.
+            }
+          }
       };
-        var chart = new google.visualization.ColumnChart(document.getElementById('col_chart'));
+        var chart = new google.visualization.BarChart(document.getElementById('col_chart'));
 
         chart.draw(data,options);
       }
@@ -57,11 +64,26 @@
         var data = google.visualization.arrayToDataTable(dataset);
 
         var options = {
-          title: 'Mag vs. Query Count comparison'
+          title: 'Mag vs. Query Count comparison',
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
+        chart.draw(data, options);
+      }
+      function drawHistogram() {
+        var dataset = {{ p|tojson }}
+          for(var i = 0;i<dataset.length;i++){
+              dataset[i][0] = dataset[i][0].toString()
+          }
+       var data = google.visualization.arrayToDataTable(dataset);
+
+        var options = {
+          title: 'Mag vs. Query Count comparison',
+          legend: { position: 'none' },
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('histogram'));
         chart.draw(data, options);
       }
     </script>
@@ -71,7 +93,6 @@
     <h1>1001626250</h1>
     <h1>Venkatesan, Charan</h1>
     <h1>Assignment 4</h1>
-    <p>Execution Time : {{ etime }}</p>
     <p>Points : {{ p }}</p>
     <p>Scatter Chart</p>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
@@ -79,6 +100,8 @@
       <div id="col_chart" style="width: 900px; height: 500px;"></div>
       <p>Pie Chart</p>
       <div id="piechart" style="width: 900px; height: 500px;"></div>
+      <p>Histogram</p>
+      <div id="histogram" style="width: 900px; height: 500px;"></div>
   </center>
   </body>
 </html>
